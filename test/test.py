@@ -59,8 +59,7 @@ class UtilityTests(unittest.TestCase):
         self.assertEqual(12, ratio_to_db(db_to_float(12, using_amplitude=False), using_amplitude=False))
 
 
-if sys.version_info >= (3, 6):
-    class PathLikeObjectTests(unittest.TestCase):
+class PathLikeObjectTests(unittest.TestCase):
 
         class MyPathLike:
             def __init__(self, path):
@@ -1397,9 +1396,4 @@ class PartialAudioSegmentLoadTests(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    import sys
-
-    if sys.version_info >= (3, 1):
-        unittest.main(warnings="ignore")
-    else:
-        unittest.main()
+    unittest.main(warnings="ignore")

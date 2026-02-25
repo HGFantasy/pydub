@@ -1,20 +1,15 @@
-from __future__ import division
-from io import BufferedReader
-
 import json
 import os
 import re
 import sys
-from subprocess import Popen, PIPE
-from math import log, ceil
+from functools import wraps
+from io import BufferedReader
+from math import ceil, log
+from subprocess import PIPE, Popen
 from tempfile import TemporaryFile
 from warnings import warn
-from functools import wraps
 
-from . import pyaudioop as audioop
-
-if sys.version_info >= (3, 0):
-    basestring = str
+from . import pyaudioop as audioop  # noqa: F401 — re-exported
 
 FRAME_WIDTHS = {
     8: 1,
@@ -54,21 +49,16 @@ def _fd_or_path_or_tempfile(fd, mode='w+b', tempfile=True):
         fd = TemporaryFile(mode=mode)
         close_fd = True
 
-    if isinstance(fd, basestring):
+    if isinstance(fd, str):
         fd = open(fd, mode=mode)
         close_fd = True
 
     if isinstance(fd, BufferedReader):
         close_fd = True
 
-    try:
-        if isinstance(fd, os.PathLike):
-            fd = open(fd, mode=mode)
-            close_fd = True
-    except AttributeError:
-        # module os has no attribute PathLike, so we're on python < 3.6.
-        # The protocol we're trying to support doesn't exist, so just pass.
-        pass
+    if isinstance(fd, os.PathLike):
+        fd = open(fd, mode=mode)
+        close_fd = True
 
     return fd, close_fd
 
@@ -81,7 +71,7 @@ def db_to_float(db, using_amplitude=True):
     db = float(db)
     if using_amplitude:
         return 10 ** (db / 20)
-    else:  # using power
+    else:
         return 10 ** (db / 10)
 
 
@@ -92,17 +82,15 @@ def ratio_to_db(ratio, val2=None, using_amplitude=True):
     """
     ratio = float(ratio)
 
-    # accept 2 values and use the ratio of val1 to val2
     if val2 is not None:
         ratio = ratio / val2
 
-    # special case for multiply-by-zero (convert to silence)
     if ratio == 0:
         return -float('inf')
 
     if using_amplitude:
         return 20 * log(ratio, 10)
-    else:  # using power
+    else:
         return 10 * log(ratio, 10)
 
 
@@ -118,7 +106,7 @@ def register_pydub_effect(fn, name=None):
         def normalize_audio_segment(audio_segment):
             ...
     """
-    if isinstance(fn, basestring):
+    if isinstance(fn, str):
         name = fn
         return lambda fn: register_pydub_effect(fn, name)
 
@@ -146,7 +134,6 @@ def which(program):
     """
     Mimics behavior of UNIX which command.
     """
-    # Add .exe program extension for windows support
     if os.name == "nt" and not program.endswith(".exe"):
         program += ".exe"
 
@@ -160,62 +147,51 @@ def which(program):
 
 def get_encoder_name():
     """
-    Return enconder default application for system, either avconv or ffmpeg
+    Return encoder default application for system, either avconv or ffmpeg
     """
     if which("avconv"):
         return "avconv"
     elif which("ffmpeg"):
         return "ffmpeg"
     else:
-        # should raise exception
-        warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+        warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, "
+             "but may not work", RuntimeWarning)
         return "ffmpeg"
 
 
 def get_player_name():
     """
-    Return enconder default application for system, either avconv or ffmpeg
+    Return player default application for system, either avplay or ffplay
     """
     if which("avplay"):
         return "avplay"
     elif which("ffplay"):
         return "ffplay"
     else:
-        # should raise exception
-        warn("Couldn't find ffplay or avplay - defaulting to ffplay, but may not work", RuntimeWarning)
+        warn("Couldn't find ffplay or avplay - defaulting to ffplay, "
+             "but may not work", RuntimeWarning)
         return "ffplay"
 
 
 def get_prober_name():
     """
-    Return probe application, either avconv or ffmpeg
+    Return probe application, either avprobe or ffprobe
     """
     if which("avprobe"):
         return "avprobe"
     elif which("ffprobe"):
         return "ffprobe"
     else:
-        # should raise exception
-        warn("Couldn't find ffprobe or avprobe - defaulting to ffprobe, but may not work", RuntimeWarning)
+        warn("Couldn't find ffprobe or avprobe - defaulting to ffprobe, "
+             "but may not work", RuntimeWarning)
         return "ffprobe"
 
 
 def fsdecode(filename):
-    """Wrapper for os.fsdecode which was introduced in python 3.2 ."""
-
-    if sys.version_info >= (3, 2):
-        PathLikeTypes = (basestring, bytes)
-        if sys.version_info >= (3, 6):
-            PathLikeTypes += (os.PathLike,)
-        if isinstance(filename, PathLikeTypes):
-            return os.fsdecode(filename)
-    else:
-        if isinstance(filename, bytes):
-            return filename.decode(sys.getfilesystemencoding())
-        if isinstance(filename, basestring):
-            return filename
-
-    raise TypeError("type {0} not accepted by fsdecode".format(type(filename)))
+    """Wrapper for os.fsdecode."""
+    if isinstance(filename, (str, bytes, os.PathLike)):
+        return os.fsdecode(filename)
+    raise TypeError(f"type {type(filename)} not accepted by fsdecode")
 
 
 def get_extra_info(stderr):
@@ -233,11 +209,16 @@ def get_extra_info(stderr):
     """
     extra_info = {}
 
-    re_stream = r'(?P<space_start> +)Stream #0[:\.](?P<stream_id>([0-9]+))(?P<content_0>.+)\n?(?! *Stream)((?P<space_end> +)(?P<content_1>.+))?'
+    re_stream = (
+        r'(?P<space_start> +)Stream #0[:\.](?P<stream_id>([0-9]+))'
+        r'(?P<content_0>.+)\n?(?! *Stream)'
+        r'((?P<space_end> +)(?P<content_1>.+))?'
+    )
     for i in re.finditer(re_stream, stderr):
-        if i.group('space_end') is not None and len(i.group('space_start')) <= len(
-                i.group('space_end')):
-            content_line = ','.join([i.group('content_0'), i.group('content_1')])
+        if (i.group('space_end') is not None
+                and len(i.group('space_start')) <= len(i.group('space_end'))):
+            content_line = ','.join(
+                [i.group('content_0'), i.group('content_1')])
         else:
             content_line = i.group('content_0')
         tokens = [x.strip() for x in re.split('[:,]', content_line) if x]
@@ -246,7 +227,8 @@ def get_extra_info(stderr):
 
 
 def mediainfo_json(filepath, read_ahead_limit=-1):
-    """Return json dictionary with media info(codec, duration, size, bitrate...) from filepath
+    """Return json dictionary with media info(codec, duration, size,
+    bitrate...) from filepath
     """
     prober = get_prober_name()
     command_args = [
@@ -265,7 +247,8 @@ def mediainfo_json(filepath, read_ahead_limit=-1):
         else:
             command_args += ["-"]
         stdin_parameter = PIPE
-        file, close_file = _fd_or_path_or_tempfile(filepath, 'rb', tempfile=False)
+        file, close_file = _fd_or_path_or_tempfile(filepath, 'rb',
+                                                   tempfile=False)
         file.seek(0)
         stdin_data = file.read()
         if close_file:
@@ -279,9 +262,7 @@ def mediainfo_json(filepath, read_ahead_limit=-1):
 
     try:
         info = json.loads(output)
-    except  json.decoder.JSONDecodeError:
-        # If ffprobe didn't give any information, just return it
-        # (for example, because the file doesn't exist)
+    except json.decoder.JSONDecodeError:
         return None
     if not info:
         return info
@@ -292,7 +273,6 @@ def mediainfo_json(filepath, read_ahead_limit=-1):
     if len(audio_streams) == 0:
         return info
 
-    # We just operate on the first audio stream in case there are more
     stream = audio_streams[0]
 
     def set_property(stream, prop, value):
@@ -322,9 +302,9 @@ def mediainfo_json(filepath, read_ahead_limit=-1):
 
 
 def mediainfo(filepath):
-    """Return dictionary with media info(codec, duration, size, bitrate...) from filepath
+    """Return dictionary with media info(codec, duration, size, bitrate...)
+    from filepath
     """
-
     prober = get_prober_name()
     command_args = [
         "-v", "quiet",
@@ -341,24 +321,21 @@ def mediainfo(filepath):
         command = [prober] + command_args
         output = Popen(command, stdout=PIPE).communicate()[0].decode("utf-8")
 
-    rgx = re.compile(r"(?:(?P<inner_dict>.*?):)?(?P<key>.*?)\=(?P<value>.*?)$")
+    rgx = re.compile(
+        r"(?:(?P<inner_dict>.*?):)?(?P<key>.*?)\=(?P<value>.*?)$")
     info = {}
 
     if sys.platform == 'win32':
         output = output.replace("\r", "")
 
     for line in output.split("\n"):
-        # print(line)
         mobj = rgx.match(line)
 
         if mobj:
-            # print(mobj.groups())
             inner_dict, key, value = mobj.groups()
 
             if inner_dict:
-                try:
-                    info[inner_dict]
-                except KeyError:
+                if inner_dict not in info:
                     info[inner_dict] = {}
                 info[inner_dict][key] = value
             else:
@@ -374,7 +351,7 @@ def cache_codecs(function):
     def wrapper():
         try:
             return cache[0]
-        except:
+        except KeyError:
             cache[0] = function()
             return cache[0]
 
@@ -392,7 +369,6 @@ def get_supported_codecs():
 
     if sys.platform == 'win32':
         output = output.replace("\r", "")
-
 
     rgx = re.compile(r"^([D.][E.][AVS.][I.][L.][S.]) (\w*) +(.*)")
     decoders = set()
@@ -419,19 +395,20 @@ def get_supported_decoders():
 def get_supported_encoders():
     return get_supported_codecs()[1]
 
+
 def stereo_to_ms(audio_segment):
-	'''
-	Left-Right -> Mid-Side
-	'''
-	channel = audio_segment.split_to_mono()
-	channel = [channel[0].overlay(channel[1]), channel[0].overlay(channel[1].invert_phase())]
-	return AudioSegment.from_mono_audiosegments(channel[0], channel[1])
+    """Left-Right -> Mid-Side"""
+    channel = audio_segment.split_to_mono()
+    channel = [channel[0].overlay(channel[1]),
+               channel[0].overlay(channel[1].invert_phase())]
+    from .audio_segment import AudioSegment
+    return AudioSegment.from_mono_audiosegments(channel[0], channel[1])
+
 
 def ms_to_stereo(audio_segment):
-	'''
-	Mid-Side -> Left-Right
-	'''
-	channel = audio_segment.split_to_mono()
-	channel = [channel[0].overlay(channel[1]) - 3, channel[0].overlay(channel[1].invert_phase()) - 3]
-	return AudioSegment.from_mono_audiosegments(channel[0], channel[1])
-
+    """Mid-Side -> Left-Right"""
+    channel = audio_segment.split_to_mono()
+    channel = [channel[0].overlay(channel[1]) - 3,
+               channel[0].overlay(channel[1].invert_phase()) - 3]
+    from .audio_segment import AudioSegment
+    return AudioSegment.from_mono_audiosegments(channel[0], channel[1])

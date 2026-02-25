@@ -6,8 +6,9 @@ pure-Python byte-by-byte iteration. This module is a drop-in replacement for
 the stdlib audioop module which was removed in Python 3.13.
 """
 
-import numpy as np
 from math import gcd
+
+import numpy as np
 
 
 class error(Exception):
@@ -129,7 +130,6 @@ def findfit(cp1, cp2):
 
 
 def findfactor(cp1, cp2):
-    size = 2
     if len(cp1) % 2 != 0:
         raise error("Strings should be even-sized")
     if len(cp1) != len(cp2):
