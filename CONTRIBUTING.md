@@ -1,45 +1,44 @@
-Pydub loves user contributions. 
+# Contributing
 
-We are happy to merge Pull Requests for features and bug fixes, of course. But, also spelling corrections, PEP 8 conformity, and platform-specific fixes.
+This is a community-maintained fork of [jiaaro/pydub](https://github.com/jiaaro/pydub).
+We welcome pull requests for features, bug fixes, documentation, tests, and
+anything else that makes pydub better.
 
-Don't be shy!
+## How to contribute
 
-### How to contribute:
+1. Fork [this repository](https://github.com/HGFantasy/pydub)
+2. Create a feature branch
+3. Make your changes
+4. Run the tests and linter (see below)
+5. Open a Pull Request
 
-1. Fork [pydub on github](https://github.com/jiaaro/pydub)
-2. Commit changes
-3. Send a Pull Request
+## Development setup
 
-you did it! 
+```bash
+git clone https://github.com/HGFantasy/pydub.git
+cd pydub
+pip install -e ".[dev]"
+```
 
-don't forget to append your name to the AUTHORS file ;)
+## Running tests and lint
 
-There _are_ a few things that will make your Pull Request more likely to be merged:
+```bash
+# Tests
+python test/test.py
 
-1. Maintain backward compatibility
-2. Avoid new dependencies
-3. Include tests (and make sure they pass)
-4. Write a short description of **what** is changed and **why**
-5. Keep your Pull Request small, and focused on fixing one thing. 
+# Lint (must pass cleanly)
+ruff check pydub/
+```
 
-  Smaller is easier to review, and easier to understand. 
-  
-  If you want to fix spelling and PEP 8 violations, send two pull requests :)
-  
-  
-### Want to pitch in?
-  
-Take a look at our issue tracker for anything tagged [`bug`][bugs] or [`todo`][todos] - these are goals of the project and your improvements are _very_ likely to be merged!
+## Guidelines
 
-That being said, there are many possible contributions we haven't thought of already. Those are welcome too!
+1. **Maintain backward compatibility** with the upstream pydub API
+2. **Include tests** and make sure all 113+ tests pass
+3. **Lint must pass** — run `ruff check pydub/` before submitting
+4. Write a short description of **what** changed and **why**
+5. Keep PRs small and focused on a single change
 
-Here are some general topics of interest for future development:
+## Upstream contributions
 
-- Make it easier to get started with pydub
-- More/better audio effects
-- Support more audio formats
-- Improve handling of large audio files
-- Make things faster and use less memory.
-
-[bugs]: https://github.com/jiaaro/pydub/issues?q=is%3Aissue+is%3Aopen+label%3Abug
-[todos]: https://github.com/jiaaro/pydub/issues?q=is%3Aissue+is%3Aopen+label%3Atodo
+If your change is relevant to the original project as well, consider also
+opening a PR against [jiaaro/pydub](https://github.com/jiaaro/pydub).

@@ -12,7 +12,10 @@ requires-python = ">=3.9"
 authors = [
     { name = "James Robert", email = "jiaaro@gmail.com" },
 ]
-keywords = ["audio", "sound", "high-level"]
+maintainers = [
+    { name = "HGFantasy" },
+]
+keywords = ["audio", "sound", "high-level", "numpy", "ffmpeg"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "License :: OSI Approved :: MIT License",
@@ -35,8 +38,10 @@ classifiers = [
 dependencies = ["numpy"]
 
 [project.urls]
-Homepage = "http://pydub.com"
-Repository = "https://github.com/jiaaro/pydub"
+Homepage = "https://github.com/HGFantasy/pydub"
+Repository = "https://github.com/HGFantasy/pydub"
+"Upstream (original)" = "https://github.com/jiaaro/pydub"
+Issues = "https://github.com/HGFantasy/pydub/issues"
 
 [project.optional-dependencies]
 playback = ["simpleaudio"]

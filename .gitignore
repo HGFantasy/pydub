@@ -1,12 +1,36 @@
-*.pyc
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv/
+env/
+venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing / caching
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+
+# Misc
+.remote-sync.json
 /.project
 /.pydevproject
-/dist/
-/pydub.egg-info/
-.DS_Store
-env
-*.swp
-.idea
-
-/build/
-.remote-sync.json

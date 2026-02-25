@@ -2,7 +2,7 @@
 
 ## Cursor Cloud specific instructions
 
-This is **pydub**, a Python library for audio manipulation (not a web service). There are no running servers or databases.
+This is **pydub** ([HGFantasy/pydub](https://github.com/HGFantasy/pydub)), a modernized fork of [jiaaro/pydub](https://github.com/jiaaro/pydub). It is a Python library for audio manipulation (not a web service). There are no running servers or databases.
 
 ### Key commands
 

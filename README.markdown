@@ -1,17 +1,42 @@
 # Pydub
 
+> **This is a modernized fork of [jiaaro/pydub](https://github.com/jiaaro/pydub)**, the original audio manipulation library created by [James Robert](https://github.com/jiaaro). This fork drops Python 2 support, replaces the deprecated `audioop` C extension with a NumPy-based engine, migrates to modern Python tooling, and targets Python 3.9+.
+
 Pydub lets you do stuff to audio in a way that isn't stupid.
 
-**Stuff you might be looking for**:
- - [Installing Pydub](#installation)
- - [API Documentation](API.markdown)
- - [Dependencies](#dependencies)
- - [Playback](#playback)
- - [Setting up ffmpeg](#getting-ffmpeg-set-up)
- - [Questions/Bugs](#bugs--questions)
- 
+| | |
+| --- | --- |
+| **Original project** | [github.com/jiaaro/pydub](https://github.com/jiaaro/pydub) |
+| **Original author** | [James Robert (@jiaaro)](https://github.com/jiaaro) |
+| **This fork** | [github.com/HGFantasy/pydub](https://github.com/HGFantasy/pydub) |
+| **License** | [MIT](LICENSE) |
 
-##  Quickstart
+---
+
+**Quick links**:
+[Installation](#installation) ·
+[API Documentation](API.markdown) ·
+[Dependencies](#dependencies) ·
+[Playback](#playback) ·
+[ffmpeg setup](#getting-ffmpeg-set-up) ·
+[What changed in this fork](#whats-different-in-this-fork) ·
+[Bugs & Questions](#bugs--questions)
+
+
+## What's different in this fork
+
+| Area | Original (`jiaaro/pydub`) | This fork |
+| --- | --- | --- |
+| Python support | 2.7, 3.4–3.9 | **3.9+** |
+| Audio math engine | C `audioop` (removed in Python 3.13) | **NumPy** vectorized ops |
+| Build system | `setup.py` | **`pyproject.toml`** (hatchling) |
+| Linting | pylama (advisory) | **ruff** (enforced) |
+| CI | Travis CI + AppVeyor (defunct) | removed (bring your own) |
+| Python 2 compat shims | ~200 lines (`basestring`, `xrange`, `izip`, …) | **deleted** |
+| `scipy_effects.py` bugs | undefined `AudioSegment`, misspelled methods | **fixed** |
+
+
+## Quickstart
 
 Open a WAV file
 
@@ -21,13 +46,13 @@ from pydub import AudioSegment
 song = AudioSegment.from_wav("never_gonna_give_you_up.wav")
 ```
 
-...or a mp3
+...or an mp3
 
 ```python
 song = AudioSegment.from_mp3("never_gonna_give_you_up.mp3")
 ```
 
-... or an ogg, or flv, or [anything else ffmpeg supports](https://www.ffmpeg.org/general.html#File-Formats)
+...or an ogg, or flv, or [anything else ffmpeg supports](https://www.ffmpeg.org/general.html#File-Formats)
 
 ```python
 ogg_version = AudioSegment.from_ogg("never_gonna_give_you_up.ogg")
@@ -109,19 +134,21 @@ awesome.export("mashup.mp3", format="mp3")
 Save the results with tags (metadata)
 
 ```python
-awesome.export("mashup.mp3", format="mp3", tags={'artist': 'Various artists', 'album': 'Best of 2011', 'comments': 'This album is awesome!'})
+awesome.export("mashup.mp3", format="mp3",
+    tags={'artist': 'Various artists', 'album': 'Best of 2011',
+          'comments': 'This album is awesome!'})
 ```
 
-You can pass an optional bitrate argument to export using any syntax ffmpeg 
+You can pass an optional bitrate argument to export using any syntax ffmpeg
 supports.
 
 ```python
 awesome.export("mashup.mp3", format="mp3", bitrate="192k")
 ```
 
-Any further arguments supported by ffmpeg can be passed as a list in a 
-'parameters' argument, with switch first, argument second. Note that no 
-validation takes place on these parameters, and you may be limited by what 
+Any further arguments supported by ffmpeg can be passed as a list in a
+`parameters` argument, with switch first, argument second. Note that no
+validation takes place on these parameters, and you may be limited by what
 your particular build of ffmpeg supports.
 
 ```python
@@ -135,7 +162,7 @@ awesome.export("mashup.mp3", format="mp3", parameters=["-ac", "2", "-vol", "150"
 ## Debugging
 
 Most issues people run into are related to converting between formats using
-ffmpeg. Pydub provides a logger that outputs the subprocess calls to 
+ffmpeg. Pydub provides a logger that outputs the subprocess calls to
 help you track down issues:
 
 ```python
@@ -150,47 +177,56 @@ subprocess.call(['ffmpeg', '-y', '-i', '/tmp/tmpeZTgMy', '-vn', '-f', 'wav', '/t
 <pydub.audio_segment.AudioSegment object at 0x101b43e10>
 ```
 
-Don't worry about the temporary files used in the conversion. They're cleaned up 
+Don't worry about the temporary files used in the conversion. They're cleaned up
 automatically.
 
 ## Bugs & Questions
 
-You can file bugs in our [github issues tracker](https://github.com/jiaaro/pydub/issues), 
-and ask any technical questions on 
-[Stack Overflow using the pydub tag](https://stackoverflow.com/questions/ask?tags=pydub). 
-We keep an eye on both.
+You can file bugs in the [issue tracker](https://github.com/HGFantasy/pydub/issues).
+
+For questions about the core pydub API you can also browse
+[Stack Overflow using the pydub tag](https://stackoverflow.com/questions/tagged/pydub).
 
 ## Installation
 
-    pip install pydub
+```
+pip install pydub
+```
 
-Pydub requires [numpy](https://numpy.org/) (installed automatically) and 
+Pydub requires **Python 3.9+**,
+[NumPy](https://numpy.org/) (installed automatically), and
 [ffmpeg](https://www.ffmpeg.org/) (see below).
 
-Or install the latest dev version from github (or replace `@master` with a [release version like `@v0.12.0`](https://github.com/jiaaro/pydub/releases))…
+Or install from this fork directly:
 
-    pip install git+https://github.com/jiaaro/pydub.git@master
+```
+pip install git+https://github.com/HGFantasy/pydub.git@master
+```
 
--OR-
+For development:
 
-    git clone https://github.com/jiaaro/pydub.git
+```
+git clone https://github.com/HGFantasy/pydub.git
+cd pydub
+pip install -e ".[dev]"
+```
 
 ## Dependencies
 
-- **[NumPy](https://numpy.org/)** – required. Installed automatically via pip.
+- **[NumPy](https://numpy.org/)** — required. Installed automatically via pip.
   Used internally for all audio sample manipulation (volume scaling, mixing,
   sample-rate conversion, etc.).
-- **[ffmpeg](https://www.ffmpeg.org/)** – required for opening and saving
+- **[ffmpeg](https://www.ffmpeg.org/)** — required for opening and saving
   non-WAV files (mp3, ogg, flac, etc.). See [Getting ffmpeg set up](#getting-ffmpeg-set-up) below.
 
 ### Playback
 
-You can play audio if you have one of these installed (simpleaudio _strongly_ recommended, even if you are installing ffmpeg):
+You can play audio if you have one of these installed (simpleaudio _strongly_ recommended):
 
- - [simpleaudio](https://simpleaudio.readthedocs.io/en/latest/)
- - [pyaudio](https://people.csail.mit.edu/hubert/pyaudio/docs/#)
- - ffplay (usually bundled with ffmpeg, see the next section)
- 
+- [simpleaudio](https://simpleaudio.readthedocs.io/en/latest/)
+- [pyaudio](https://people.csail.mit.edu/hubert/pyaudio/docs/#)
+- ffplay (usually bundled with ffmpeg)
+
 ```python
 from pydub import AudioSegment
 from pydub.playback import play
@@ -223,15 +259,14 @@ Windows:
 
 `AudioSegment` objects are immutable.
 
-
 ### Ogg exporting and default codecs
 
 The Ogg specification ([RFC 5334](https://tools.ietf.org/html/rfc5334)) does not specify
 the codec to use, this choice is left up to the user. Vorbis and Theora are just
-some of a number of potential codecs (see page 3 of the rfc) that can be used for the
+some of a number of potential codecs (see page 3 of the RFC) that can be used for the
 encapsulated data.
 
-When no codec is specified exporting to `ogg` will _default_ to using `vorbis`
+When no codec is specified, exporting to `ogg` will _default_ to using `vorbis`
 as a convenience. That is:
 
 ```python
@@ -241,16 +276,16 @@ song.export("out.ogg", format="ogg")  # Is the same as:
 song.export("out.ogg", format="ogg", codec="libvorbis")
 ```
 
-## Example Use
+## Examples
 
-Suppose you have a directory filled with *mp4* and *flv* videos and you want to convert all of them to *mp3* so you can listen to  them on your mp3 player.
+Convert a directory of videos to mp3:
 
 ```python
 import os
 import glob
 from pydub import AudioSegment
 
-video_dir = '/home/johndoe/downloaded_videos/'  # Path where the videos are located
+video_dir = '/home/johndoe/downloaded_videos/'
 extension_list = ('*.mp4', '*.flv')
 
 os.chdir(video_dir)
@@ -260,7 +295,7 @@ for extension in extension_list:
         AudioSegment.from_file(video).export(mp3_filename, format='mp3')
 ```
 
-### How about another example?
+Build a playlist with crossfades:
 
 ```python
 from glob import glob
@@ -269,32 +304,29 @@ from pydub import AudioSegment
 playlist_songs = [AudioSegment.from_mp3(mp3_file) for mp3_file in glob("*.mp3")]
 
 first_song = playlist_songs.pop(0)
-
-# let's just include the first 30 seconds of the first song (slicing
-# is done by milliseconds)
-beginning_of_song = first_song[:30*1000]
+beginning_of_song = first_song[:30 * 1000]
 
 playlist = beginning_of_song
 for song in playlist_songs:
-
-    # We don't want an abrupt stop at the end, so let's do a 10 second crossfades
     playlist = playlist.append(song, crossfade=(10 * 1000))
 
-# let's fade out the end of the last song
 playlist = playlist.fade_out(30)
 
-# hmm I wonder how long it is... ( len(audio_segment) returns milliseconds )
-playlist_length = len(playlist) / (1000*60)
+playlist_length = len(playlist) / (1000 * 60)
 
-# lets save it!
-with open("%s_minute_playlist.mp3" % playlist_length, 'wb') as out_f:
+with open(f"{playlist_length}_minute_playlist.mp3", 'wb') as out_f:
     playlist.export(out_f, format='mp3')
 ```
 
-## License ([MIT License](https://opensource.org/licenses/mit-license.php))
+## License ([MIT](https://opensource.org/licenses/mit-license.php))
 
-Copyright © 2011 James Robert, http://jiaaro.com
+Original work copyright © 2011 [James Robert](http://jiaaro.com).
+See [AUTHORS](AUTHORS) for the full list of contributors to the original project.
 
+This fork is maintained by [@HGFantasy](https://github.com/HGFantasy) and is
+distributed under the same MIT license.
+
+```
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
 "Software"), to deal in the Software without restriction, including
@@ -313,3 +345,4 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
