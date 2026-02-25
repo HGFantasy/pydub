@@ -233,7 +233,7 @@ class AudioSegment(object):
                 self._data = audioop.bias(self._data, 1, -128)
 
         # Convert 24-bit audio to 32-bit audio.
-        # (stdlib audioop and array modules do not support 24-bit data)
+        # (array module does not support 24-bit data)
         if self.sample_width == 3:
             byte_buffer = BytesIO()
 

@@ -16,6 +16,7 @@ setup(
     keywords='audio sound high-level',
     url='http://pydub.com',
     packages=['pydub'],
+    install_requires=['numpy'],
     long_description=__doc__,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
