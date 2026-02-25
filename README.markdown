@@ -1,14 +1,14 @@
-# Pydub [![Build Status](https://travis-ci.org/jiaaro/pydub.svg?branch=master)](https://travis-ci.org/jiaaro/pydub) [![Build status](https://ci.appveyor.com/api/projects/status/gy1ucp9o5khq7fqi/branch/master?svg=true)](https://ci.appveyor.com/project/jiaaro/pydub/branch/master)
+# Pydub
 
 Pydub lets you do stuff to audio in a way that isn't stupid.
 
 **Stuff you might be looking for**:
- - [Installing Pydub](https://github.com/jiaaro/pydub#installation)
- - [API Documentation](https://github.com/jiaaro/pydub/blob/master/API.markdown)
- - [Dependencies](https://github.com/jiaaro/pydub#dependencies)
- - [Playback](https://github.com/jiaaro/pydub#playback)
- - [Setting up ffmpeg](https://github.com/jiaaro/pydub#getting-ffmpeg-set-up)
- - [Questions/Bugs](https://github.com/jiaaro/pydub#bugs--questions)
+ - [Installing Pydub](#installation)
+ - [API Documentation](API.markdown)
+ - [Dependencies](#dependencies)
+ - [Playback](#playback)
+ - [Setting up ffmpeg](#getting-ffmpeg-set-up)
+ - [Questions/Bugs](#bugs--questions)
  
 
 ##  Quickstart
@@ -27,7 +27,7 @@ song = AudioSegment.from_wav("never_gonna_give_you_up.wav")
 song = AudioSegment.from_mp3("never_gonna_give_you_up.mp3")
 ```
 
-... or an ogg, or flv, or [anything else ffmpeg supports](http://www.ffmpeg.org/general.html#File-Formats)
+... or an ogg, or flv, or [anything else ffmpeg supports](https://www.ffmpeg.org/general.html#File-Formats)
 
 ```python
 ogg_version = AudioSegment.from_ogg("never_gonna_give_you_up.ogg")
@@ -122,7 +122,7 @@ awesome.export("mashup.mp3", format="mp3", bitrate="192k")
 Any further arguments supported by ffmpeg can be passed as a list in a 
 'parameters' argument, with switch first, argument second. Note that no 
 validation takes place on these parameters, and you may be limited by what 
-your particular build of ffmpeg/avlib supports.
+your particular build of ffmpeg supports.
 
 ```python
 # Use preset mp3 quality 0 (equivalent to lame V0)
@@ -135,7 +135,7 @@ awesome.export("mashup.mp3", format="mp3", parameters=["-ac", "2", "-vol", "150"
 ## Debugging
 
 Most issues people run into are related to converting between formats using
-ffmpeg/avlib. Pydub provides a logger that outputs the subprocess calls to 
+ffmpeg. Pydub provides a logger that outputs the subprocess calls to 
 help you track down issues:
 
 ```python
@@ -146,7 +146,7 @@ help you track down issues:
 >>> l.addHandler(logging.StreamHandler())
 
 >>> AudioSegment.from_file("./test/data/test1.mp3")
-subprocess.call(['ffmpeg', '-y', '-i', '/var/folders/71/42k8g72x4pq09tfp920d033r0000gn/T/tmpeZTgMy', '-vn', '-f', 'wav', '/var/folders/71/42k8g72x4pq09tfp920d033r0000gn/T/tmpK5aLcZ'])
+subprocess.call(['ffmpeg', '-y', '-i', '/tmp/tmpeZTgMy', '-vn', '-f', 'wav', '/tmp/tmpK5aLcZ'])
 <pydub.audio_segment.AudioSegment object at 0x101b43e10>
 ```
 
@@ -157,14 +157,15 @@ automatically.
 
 You can file bugs in our [github issues tracker](https://github.com/jiaaro/pydub/issues), 
 and ask any technical questions on 
-[Stack Overflow using the pydub tag](http://stackoverflow.com/questions/ask?tags=pydub). 
+[Stack Overflow using the pydub tag](https://stackoverflow.com/questions/ask?tags=pydub). 
 We keep an eye on both.
 
 ## Installation
 
-Installing pydub is easy, but don't forget to install ffmpeg/avlib (the next section in this doc)
-
     pip install pydub
+
+Pydub requires [numpy](https://numpy.org/) (installed automatically) and 
+[ffmpeg](https://www.ffmpeg.org/) (see below).
 
 Or install the latest dev version from github (or replace `@master` with a [release version like `@v0.12.0`](https://github.com/jiaaro/pydub/releases))…
 
@@ -174,25 +175,21 @@ Or install the latest dev version from github (or replace `@master` with a [rele
 
     git clone https://github.com/jiaaro/pydub.git
 
--OR-
-
-Copy the pydub directory into your python path. Zip 
-[here](https://github.com/jiaaro/pydub/zipball/master)
-
 ## Dependencies
 
-You can open and save WAV files with pure python. For opening and saving non-wav 
-files – like mp3 – you'll need [ffmpeg](http://www.ffmpeg.org/) or 
-[libav](http://libav.org/).
+- **[NumPy](https://numpy.org/)** – required. Installed automatically via pip.
+  Used internally for all audio sample manipulation (volume scaling, mixing,
+  sample-rate conversion, etc.).
+- **[ffmpeg](https://www.ffmpeg.org/)** – required for opening and saving
+  non-WAV files (mp3, ogg, flac, etc.). See [Getting ffmpeg set up](#getting-ffmpeg-set-up) below.
 
 ### Playback
 
-You can play audio if you have one of these installed (simpleaudio _strongly_ recommended, even if you are installing ffmpeg/libav):
+You can play audio if you have one of these installed (simpleaudio _strongly_ recommended, even if you are installing ffmpeg):
 
  - [simpleaudio](https://simpleaudio.readthedocs.io/en/latest/)
  - [pyaudio](https://people.csail.mit.edu/hubert/pyaudio/docs/#)
  - ffplay (usually bundled with ffmpeg, see the next section)
- - avplay (usually bundled with libav, see the next section)
  
 ```python
 from pydub import AudioSegment
@@ -204,46 +201,32 @@ play(sound)
 
 ## Getting ffmpeg set up
 
-You may use **libav or ffmpeg**.
-
-Mac (using [homebrew](http://brew.sh)):
+Mac (using [homebrew](https://brew.sh)):
 
 ```bash
-# libav
-brew install libav
-
-####    OR    #####
-
-# ffmpeg
 brew install ffmpeg
 ```
 
-Linux (using aptitude):
+Linux (using apt):
 
 ```bash
-# libav
-apt-get install libav-tools libavcodec-extra
-
-####    OR    #####
-
-# ffmpeg
-apt-get install ffmpeg libavcodec-extra
+apt-get install ffmpeg
 ```
 
 Windows:
 
-1. Download and extract libav from [Windows binaries provided here](http://builds.libav.org/windows/).
-2. Add the libav `/bin` folder to your PATH envvar
+1. Download a static build from [ffmpeg.org](https://ffmpeg.org/download.html) or [gyan.dev](https://www.gyan.dev/ffmpeg/builds/).
+2. Extract and add the `bin` folder to your PATH.
 3. `pip install pydub`
 
 ## Important Notes
 
-`AudioSegment` objects are [immutable](http://www.devshed.com/c/a/Python/String-and-List-Python-Object-Types/1/)
+`AudioSegment` objects are immutable.
 
 
 ### Ogg exporting and default codecs
 
-The Ogg specification ([http://tools.ietf.org/html/rfc5334](rfc5334)) does not specify
+The Ogg specification ([RFC 5334](https://tools.ietf.org/html/rfc5334)) does not specify
 the codec to use, this choice is left up to the user. Vorbis and Theora are just
 some of a number of potential codecs (see page 3 of the rfc) that can be used for the
 encapsulated data.
@@ -308,7 +291,7 @@ with open("%s_minute_playlist.mp3" % playlist_length, 'wb') as out_f:
     playlist.export(out_f, format='mp3')
 ```
 
-## License ([MIT License](http://opensource.org/licenses/mit-license.php))
+## License ([MIT License](https://opensource.org/licenses/mit-license.php))
 
 Copyright © 2011 James Robert, http://jiaaro.com
 
@@ -330,4 +313,3 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
