@@ -1,0 +1,55 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pydub"
+version = "0.26.0"
+description = "Manipulate audio with a simple and easy high level interface"
+readme = {file = "README.markdown", content-type = "text/markdown"}
+license = "MIT"
+requires-python = ">=3.9"
+authors = [
+    { name = "James Robert", email = "jiaaro@gmail.com" },
+]
+keywords = ["audio", "sound", "high-level"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Topic :: Multimedia :: Sound/Audio",
+    "Topic :: Multimedia :: Sound/Audio :: Analysis",
+    "Topic :: Multimedia :: Sound/Audio :: Conversion",
+    "Topic :: Multimedia :: Sound/Audio :: Editors",
+    "Topic :: Multimedia :: Sound/Audio :: Mixers",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Utilities",
+]
+dependencies = ["numpy"]
+
+[project.urls]
+Homepage = "http://pydub.com"
+Repository = "https://github.com/jiaaro/pydub"
+
+[project.optional-dependencies]
+playback = ["simpleaudio"]
+scipy = ["scipy"]
+dev = ["ruff", "scipy"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["pydub"]
