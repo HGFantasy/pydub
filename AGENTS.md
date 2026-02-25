@@ -9,13 +9,14 @@ This is **pydub**, a Python library for audio manipulation (not a web service). 
 | Task | Command |
 |------|---------|
 | Tests | `python test/test.py` |
-| Lint | `python -m pylama -i W,E501 pydub/` |
-| Install (dev) | `pip install -e . scipy pylama` |
+| Lint | `ruff check pydub/` |
+| Install (dev) | `pip install -e ".[dev]"` |
 
 ### Architecture notes
 
 - **No C audioop dependency**: The legacy stdlib `audioop` module (removed in Python 3.13) has been replaced with `pydub/pyaudioop.py`, a NumPy-based reimplementation. All audio operations (mul, add, bias, rms, ratecv, etc.) use vectorized NumPy array operations.
-- **Lint is advisory**: CI runs `pylama || true`; lint warnings are informational and do not block.
+- **Build system**: `pyproject.toml` with hatchling backend (no setup.py).
+- **Lint**: Uses `ruff` (configured in pyproject.toml). Must pass cleanly.
 
 ### System dependencies
 
